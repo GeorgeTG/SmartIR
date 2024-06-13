@@ -1,4 +1,5 @@
 import asyncio
+import aiofiles
 import json
 import logging
 import os.path
@@ -72,9 +73,9 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
                           "place the file manually in the proper directory.")
             return
 
-    with open(device_json_path) as j:
+    async with aiofiles.open(device_json_path) as j:
         try:
-            device_data = json.load(j)
+            device_data = json.loads(await j.readlines())
         except Exception:
             _LOGGER.error("The device JSON file is invalid")
             return
