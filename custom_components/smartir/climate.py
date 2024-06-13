@@ -37,7 +37,9 @@ CONF_POWER_SENSOR_RESTORE_STATE = 'power_sensor_restore_state'
 
 SUPPORT_FLAGS = (
     ClimateEntityFeature.TARGET_TEMPERATURE | 
-    ClimateEntityFeature.FAN_MODE
+    ClimateEntityFeature.FAN_MODE |
+    ClimateEntityFeature.TURN_OFF |
+    ClimateEntityFeature.TURN_ON
 )
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
