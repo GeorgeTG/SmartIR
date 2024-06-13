@@ -15,7 +15,7 @@ from homeassistant.const import (
     CONF_NAME, STATE_ON, STATE_OFF, STATE_UNKNOWN, STATE_UNAVAILABLE, ATTR_TEMPERATURE,
     PRECISION_TENTHS, PRECISION_HALVES, PRECISION_WHOLE)
 from homeassistant.core import callback
-from homeassistant.helpers.event import async_track_state_change
+from homeassistant.helpers.event import async_track_state_change_event
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.restore_state import RestoreEntity
 from . import COMPONENT_ABS_DIR, Helper
@@ -174,7 +174,7 @@ class SmartIRClimate(ClimateEntity, RestoreEntity):
                 self._last_on_operation = last_state.attributes['last_on_operation']
 
         if self._temperature_sensor:
-            async_track_state_change(self.hass, self._temperature_sensor, 
+            async_track_state_change_event(self.hass, self._temperature_sensor, 
                                      self._async_temp_sensor_changed)
 
             temp_sensor_state = self.hass.states.get(self._temperature_sensor)
@@ -182,7 +182,7 @@ class SmartIRClimate(ClimateEntity, RestoreEntity):
                 self._async_update_temp(temp_sensor_state)
 
         if self._humidity_sensor:
-            async_track_state_change(self.hass, self._humidity_sensor, 
+            async_track_state_change_event(self.hass, self._humidity_sensor, 
                                      self._async_humidity_sensor_changed)
 
             humidity_sensor_state = self.hass.states.get(self._humidity_sensor)
@@ -190,7 +190,7 @@ class SmartIRClimate(ClimateEntity, RestoreEntity):
                 self._async_update_humidity(humidity_sensor_state)
 
         if self._power_sensor:
-            async_track_state_change(self.hass, self._power_sensor, 
+            async_track_state_change_event(self.hass, self._power_sensor, 
                                      self._async_power_sensor_changed)
 
     @property
@@ -387,24 +387,31 @@ class SmartIRClimate(ClimateEntity, RestoreEntity):
             except Exception as e:
                 _LOGGER.exception(e)
             
-    async def _async_temp_sensor_changed(self, entity_id, old_state, new_state):
+    @callback
+    async def _async_temp_sensor_changed(self, event):
         """Handle temperature sensor changes."""
+        new_state = event.data["new_state"]
         if new_state is None:
             return
 
         self._async_update_temp(new_state)
         self.async_write_ha_state()
 
-    async def _async_humidity_sensor_changed(self, entity_id, old_state, new_state):
+    @callback
+    async def _async_humidity_sensor_changed(self, event):
         """Handle humidity sensor changes."""
+        new_state = event.data["new_state"]
         if new_state is None:
             return
 
         self._async_update_humidity(new_state)
         self.async_write_ha_state()
 
-    async def _async_power_sensor_changed(self, entity_id, old_state, new_state):
+    @callback
+    async def _async_power_sensor_changed(self, event):
         """Handle power sensor changes."""
+        old_state = event.data["old_state"]
+        new_state = event.data["new_state"]
         if new_state is None:
             return
 
