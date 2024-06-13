@@ -3,7 +3,10 @@ import json
 import logging
 import os.path
 
+
+import aiofiles
 import voluptuous as vol
+
 
 from homeassistant.components.fan import (
     FanEntity, PLATFORM_SCHEMA,
@@ -74,9 +77,9 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
                           "place the file manually in the proper directory.")
             return
 
-    with open(device_json_path) as j:
+    async with aiofiles.open(device_json_path) as j:
         try:
-            device_data = json.load(j)
+            device_data = json.load(await j.read())
         except Exception:
             _LOGGER.error("The device JSON file is invalid")
             return

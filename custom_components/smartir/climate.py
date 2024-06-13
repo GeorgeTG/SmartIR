@@ -3,7 +3,10 @@ import json
 import logging
 import os.path
 
+
+import aiofiles
 import voluptuous as vol
+
 
 from homeassistant.components.climate import ClimateEntity, PLATFORM_SCHEMA
 from homeassistant.components.climate.const import (
@@ -82,10 +85,10 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
                           "place the file manually in the proper directory.")
             return
 
-    with open(device_json_path) as j:
+    async with aiofiles.open(device_json_path) as j:
         try:
             _LOGGER.debug(f"loading json file {device_json_path}")
-            device_data = json.load(j)
+            device_data = json.loads(await j.read())
             _LOGGER.debug(f"{device_json_path} file loaded")
         except Exception:
             _LOGGER.error("The device Json file is invalid")

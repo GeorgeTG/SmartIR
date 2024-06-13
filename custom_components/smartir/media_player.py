@@ -1,10 +1,12 @@
 import asyncio
-import aiofiles
 import json
 import logging
 import os.path
 
+
+import aiofiles
 import voluptuous as vol
+
 
 from homeassistant.components.media_player import (
     MediaPlayerEntity, PLATFORM_SCHEMA)
@@ -75,7 +77,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
 
     async with aiofiles.open(device_json_path) as j:
         try:
-            device_data = json.loads(await j.readlines())
+            device_data = json.loads(await j.read())
         except Exception:
             _LOGGER.error("The device JSON file is invalid")
             return
