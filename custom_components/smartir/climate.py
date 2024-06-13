@@ -138,6 +138,7 @@ class SmartIRClimate(ClimateEntity, RestoreEntity):
         self._unit = hass.config.units.temperature_unit
         
         #Supported features
+        self._enable_turn_on_off_backwards_compatibility = False
         self._support_flags = SUPPORT_FLAGS
         self._support_swing = False
 
